@@ -1,17 +1,25 @@
 package main
 
 import (
-	"fmt"
+	"auth-service/internal/repository"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
+	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	r := chi.NewRouter()
+	godotenv.Load()
 
+	db := repository.NewDB(os.Getenv("DATABASE_URL"))
+	defer db.Close()
+
+	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "ok")
+		w.Write([]byte("ok"))
 	})
 
-	http.ListenAndServe(":6767", r)
+	log.Println("Server starting on :8080")
+	http.ListenAndServe(":8080", r)
 }
